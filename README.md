@@ -10,10 +10,12 @@ The goal of saekir is to …
 
 ## Installation
 
-You can install the development version of saekir like so:
+You can install the development version of saekir from
+[GitHub](https://github.com/) with:
 
 ``` r
-# FILL THIS IN! HOW CAN PEOPLE INSTALL YOUR DEV PACKAGE?
+# install.packages("pak")
+pak::pak("auv2/saekir")
 ```
 
 ## Example
