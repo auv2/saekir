@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of saekir is to ...
+The goal of saekir is to fetch student responses from various test delivery systems and return them in a standardized format.
 
 ## Installation
 
@@ -35,26 +35,50 @@ This is a basic example which shows you how to solve a common problem:
 
 ```{r example}
 library(saekir)
+students_responses <- read_TAO_responses("data/TAO_test_data.csv")
 
+dplyr::glimpse(students_responses)
+
+```
+
+
+
+## example of validation
+```{r}
 # Create a valid sample dataset
 valid_data <- dplyr::tibble(
   student_id = c("1", "2", "3", "2", "2", "2"),
   item_id = c(1, 2, 3, 1, 2, 3),
-  response = list("A", c("A", "B"), "",
-                  "B", c("A", "B"), "Long answer text"),
+  response = list("A", c("A", "B"), "", "B", c("A", "B"), "Long answer text"),
   response_status = factor(
-    c("correct", "incorrect", "skipped",
-      "incorrect", "incorrect", "correct"),
+    c(
+      "correct",
+      "incorrect",
+      "skipped",
+      "incorrect",
+      "incorrect",
+      "correct"
+    ),
     levels = c("skipped", "correct", "incorrect")
   ),
-  score = c(1, 0, 0,0, 0, 2),
-  response_time = c(30, 45, 0,32, 41, 60),
-  timestamp = as.POSIXct(
+  score = c(1, 0, 0, 0, 0, 2),
+  response_time = c(30, 45, 0, 32, 41, 60),
+  start_time = as.POSIXct(
+    c(
+      "2025-03-12 14:30:00",
+      "2025-03-12 14:35:00",
+      "2025-03-12 14:40:00",
+      "2025-03-12 14:30:00",
+      "2025-03-12 14:35:00",
+      "2025-03-12 14:40:00"
+    )
+  ),
+  end_time = as.POSIXct(
     c(
       "2025-03-12 14:35:00",
       "2025-03-12 14:40:00",
       "2025-03-12 14:45:00",
-            "2025-03-12 14:35:00",
+      "2025-03-12 14:35:00",
       "2025-03-12 14:40:00",
       "2025-03-12 14:45:00"
     )
