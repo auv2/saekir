@@ -40,6 +40,17 @@ dplyr::glimpse(students_responses)
 #> $ end_time        <dttm> 2025-03-10 10:54:16, 2025-03-03 20:40:10, 2025-03-05 …
 ```
 
+``` r
+get_item_matrix(students_responses)
+#> # A tibble: 3 × 14
+#>   student_id     q05   q06   q07   q08   q09   q10   q12   q13   q14   q15   q16
+#>   <chr>        <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+#> 1 Sigrun_MMS       0     0     0     0     0     0     0     0     0     0     0
+#> 2 gervinemand…     0     0     0     0     0     1     0     0     1     0     1
+#> 3 gervinemand…     0     0     0     0     0     0     0     0     0     0     0
+#> # ℹ 2 more variables: q17 <dbl>, q19 <dbl>
+```
+
 ## example of validation
 
 ``` r

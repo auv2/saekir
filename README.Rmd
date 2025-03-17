@@ -43,6 +43,11 @@ dplyr::glimpse(students_responses)
 
 
 
+```{r}
+get_item_matrix(students_responses)
+```
+
+
 ## example of validation
 ```{r}
 # Create a valid sample dataset
