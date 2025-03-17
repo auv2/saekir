@@ -3,19 +3,18 @@ library(dplyr)
 library(readr)
 
 # Create a temporary CSV file for testing
-df <-  data.frame(
+df <- data.frame(
   login = c("S1", "S2", "S3"),
-  session_start_time = c("2025-03-12 14:35:00", "2025-03-12 14:40:00", "2025-03-12 15:00:00"),
-  session_end_time = c("2025-03-12 14:45:00", "2025-03-12 14:55:00", "2025-03-12 15:20:00"),
-  items.item.1_duration = c(30, 50, NA),
+  sessionStartTime = c("2025-03-12 14:35:00", "2025-03-12 14:40:00", "2025-03-12 15:00:00"),
+  sessionEndTime = c("2025-03-12 14:45:00", "2025-03-12 14:55:00", "2025-03-12 15:20:00"),
+  items.item.1.duration = c(30, 50, NA),
   items.item.1.outcomes.SCORE = c(1, 2, 1),
   items.item.1.outcomes.MAXSCORE = c(2, 2, NA),
-  items.item.1.statusCorrect = c("correct", "incorrect", "correct"),
+  items.item.1.status.correct = c("correct", "incorrect", "correct"),
   items.item.1.responses.RESPONSE.value = c("A", "C", NA),
   items.item.1.responses.RESPONSE.correct = c(TRUE, FALSE, TRUE),
   stringsAsFactors = FALSE
 )
-
 
 # Create a temporary file
 temp_file <- tempfile(fileext = ".csv")
@@ -28,7 +27,7 @@ test_data <- read_TAO_responses(temp_file)
 
 test_that("Function returns a tibble with correct column names", {
   expected_cols <- c("student_id", "item_id", "response", "response_status",
-                     "score", "response_time", "timestamp")
+                     "score", "response_time", "start_time", "end_time")
 
   expect_true(all(expected_cols %in% names(test_data)))
 })
@@ -40,7 +39,8 @@ test_that("Data types match expected format", {
   expect_s3_class(test_data$response_status, "factor")
   expect_type(test_data$score, "double") # as.numeric()
   expect_type(test_data$response_time, "double") # as.numeric()
-  expect_s3_class(test_data$timestamp, "POSIXct")
+  expect_s3_class(test_data$start_time, "POSIXct")
+  expect_s3_class(test_data$end_time, "POSIXct")
 })
 
 test_that("Missing values are correctly handled", {
@@ -49,5 +49,10 @@ test_that("Missing values are correctly handled", {
 
 test_that("Data is sorted by item_id and student_id", {
   expect_true(all(diff(test_data$item_id) >= 0))  # Item ID should be increasing
+})
+
+test_that("Start and end times are parsed correctly", {
+  expect_equal(test_data$start_time[1], as.POSIXct("2025-03-12 14:35:00"))
+  expect_equal(test_data$end_time[1], as.POSIXct("2025-03-12 14:45:00"))
 })
 

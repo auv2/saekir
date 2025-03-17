@@ -18,7 +18,8 @@ A tibble with standardized columns:
 \item \code{response_status}: Factor, indicating if the response was correct, skipped, etc.
 \item \code{score}: Numeric, score for the item.
 \item \code{response_time}: Numeric, time spent on the item (in seconds).
-\item \code{timestamp}: POSIXct, timestamp of the session end time.
+\item \code{start_time}: POSIXct, timestamp when the test session started.
+\item \code{end_time}: POSIXct, timestamp when the test session ended.
 }
 }
 \description{

@@ -12,21 +12,28 @@ valid_data <- tibble(
   ),
   score = c(1, 0, 2),
   response_time = c(30, 45, 60),
-  timestamp = as.POSIXct(
+  start_time = as.POSIXct(
+    c(
+      "2025-03-12 14:30:00",
+      "2025-03-12 14:40:00",
+      "2025-03-12 14:50:00"
+    )
+  ),
+  end_time = as.POSIXct(
     c(
       "2025-03-12 14:35:00",
-      "2025-03-12 14:40:00",
-      "2025-03-12 14:45:00"
+      "2025-03-12 14:45:00",
+      "2025-03-12 15:00:00"
     )
   )
 )
-
 
 # Define test cases
 test_that("Valid data passes validation", {
   expect_condition(
     validate_student_responses(valid_data),
-    "Validation passed: `student_responses` is correctly formatted.")
+    "Validation passed: `student_responses` is correctly formatted."
+  )
 })
 
 test_that("Incorrect column order fails", {
@@ -56,7 +63,8 @@ test_that("Extra columns do not affect validation", {
   extra_col_data <- valid_data |> mutate(extra = "extra_column")
   expect_condition(
     validate_student_responses(extra_col_data |> select(-extra)),
-    "Validation passed: `student_responses` is correctly formatted.")
+    "Validation passed: `student_responses` is correctly formatted."
+  )
 })
 
 test_that("Factor levels are correctly enforced", {
