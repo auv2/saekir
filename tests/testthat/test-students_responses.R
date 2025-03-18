@@ -34,7 +34,7 @@ test_that("Function returns a tibble with correct column names", {
 
 test_that("Data types match expected format", {
   expect_type(test_data$student_id, "character")
-  expect_type(test_data$item_id, "double") # as.numeric()
+  expect_type(test_data$item_id, "character")
   expect_type(test_data$response, "character")
   expect_s3_class(test_data$response_status, "factor")
   expect_type(test_data$score, "double") # as.numeric()
@@ -47,8 +47,8 @@ test_that("Missing values are correctly handled", {
   expect_true(is.na(test_data$response_time[3]))  # Missing value from CSV
 })
 
-test_that("Data is sorted by item_id and student_id", {
-  expect_true(all(diff(test_data$item_id) >= 0))  # Item ID should be increasing
+test_that("Data is sorted by item_number and student_id", {
+  expect_true(all(diff(test_data$item_number) >= 0))  # Item number should be increasing
 })
 
 test_that("Start and end times are parsed correctly", {

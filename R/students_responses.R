@@ -10,7 +10,8 @@
 #' @return A tibble with standardized columns:
 #'   \itemize{
 #'     \item \code{student_id}: Character, unique student identifier.
-#'     \item \code{item_id}: Numeric, item number in the test.
+#'     \item \code{item_id}: Character, item label in the test.
+#'     \item \code{item_number: Numeric, item number in the test.
 #'     \item \code{response}: Character, student response (single character, multiple responses, or long text).
 #'     \item \code{response_status}: Factor, indicating if the response was correct, skipped, etc.
 #'     \item \code{score}: Numeric, score for the item.
@@ -26,10 +27,13 @@
 #' @importFrom stringr str_remove
 #' @export
 read_TAO_responses <- function(PATH) {
-  vars <- c("_duration",
-            "_outcomes_score",
-            "_status_correct",
-            "_responses_response_value")
+  vars <- c(
+    "_label",
+    "_duration",
+    "_outcomes_score",
+    "_status_correct",
+    "_responses_response_value"
+  )
 
   dat <- readr::read_csv(PATH, show_col_types = FALSE) |>
     janitor::clean_names()
@@ -50,13 +54,15 @@ read_TAO_responses <- function(PATH) {
     ) |>
     dplyr::mutate(
       var = stringr::str_remove(var, "items_"),
-      item_id = readr::parse_number(var),
+      item_number = readr::parse_number(var),
+      item_id = ifelse(grepl("_label", var), val, var),
       var = stringr::str_remove(var, "item_\\d+_")
     ) |>
     tidyr::pivot_wider(names_from = "var", values_from = "val") |>
     dplyr::transmute(
       student_id = as.character(login),
-      item_id = as.numeric(item_id),
+      item_id = as.character(item_id),
+      item_number = as.numeric(item_number),
       response = responses_response_value,
       response_status = factor(status_correct),
       score = as.numeric(outcomes_score),
