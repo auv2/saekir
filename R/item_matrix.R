@@ -1,22 +1,3 @@
-#' Format Item Names
-#'
-#' Converts numeric item IDs into standardized names by adding a prefix and zero-padding.
-#'
-#' @param i A numeric or character vector of item IDs.
-#' @param prefix A character string to prepend to the item number (default: `"q"`).
-#'
-#' @return A character vector of formatted item names.
-#'
-#' @examples
-#' name_item(1)  # "q01"
-#' name_item(10) # "q10"
-#' name_item(c(1, 2, 10), prefix = "item_") # "item_01" "item_02" "item_10"
-#'
-#' @export
-name_item <- function(i, prefix = "q") {
-  paste0(prefix, stringr::str_pad(string = i, width = 2, pad = "0"))
-}
-
 #' Convert Student Responses to Item Score Matrix
 #'
 #' This function transforms the `students_responses` data frame into a rectangular format
@@ -30,7 +11,8 @@ name_item <- function(i, prefix = "q") {
 #'     \item \code{item_id}: Numeric, unique identifier for each test item.
 #'     \item \code{score}: Numeric, score obtained by the student on the item.
 #'   }
-#'
+#' @param responses Logical. If `FALSE`, the matrix contains scored items (numeric values).
+#'   If `TRUE`, it contains raw responses (character values).
 #' @return A data frame (wide format) where:
 #'   \itemize{
 #'     \item Rows represent unique students.
@@ -46,11 +28,25 @@ name_item <- function(i, prefix = "q") {
 #'
 #' @importFrom dplyr filter select mutate
 #' @importFrom tidyr pivot_wider
+#' @importFrom stringr str_pad
 #' @export
-get_item_matrix <- function(students_responses) {
+get_item_matrix <- function(students_responses, responses = FALSE) {
+
+  # name_item <- function(i, prefix) {
+  #   paste0(prefix, stringr::str_pad(string = i, width = 2, pad = "0"))
+  # }
+
+  if (responses) {
+    students_responses |>
+      dplyr::filter(!is.na(response)) |>
+      dplyr::select(student_id, item_id, response) |>
+     # dplyr::mutate(item_id = name_item(item_id)) |>
+      tidyr::pivot_wider(names_from = item_id, values_from = response)
+  } else {
   students_responses |>
     dplyr::filter(!is.na(score)) |>
     dplyr::select(student_id, item_id, score) |>
-    dplyr::mutate(item_id = name_item(item_id)) |>
+   # dplyr::mutate(item_id = name_item(item_id)) |>
     tidyr::pivot_wider(names_from = item_id, values_from = score)
+  }
 }

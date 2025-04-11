@@ -4,7 +4,7 @@
 \alias{get_item_matrix}
 \title{Convert Student Responses to Item Score Matrix}
 \usage{
-get_item_matrix(students_responses)
+get_item_matrix(students_responses, responses = FALSE, prefix = "q")
 }
 \arguments{
 \item{students_responses}{A data frame containing student responses with at least
@@ -14,6 +14,11 @@ the following columns:
 \item \code{item_id}: Numeric, unique identifier for each test item.
 \item \code{score}: Numeric, score obtained by the student on the item.
 }}
+
+\item{responses}{Logical. If \code{FALSE}, the matrix contains scored items (numeric values).
+If \code{TRUE}, it contains raw responses (character values).}
+
+\item{prefix}{Character. A prefix to use for item column names (e.g., "q" for "q09").}
 }
 \value{
 A data frame (wide format) where:
