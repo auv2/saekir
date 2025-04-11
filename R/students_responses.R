@@ -9,20 +9,20 @@
 #'
 #' @return A tibble with standardized columns:
 #'   \itemize{
-#'     \item \code{student_id}: Character, unique student identifier.
-#'     \item \code{item_id}: Character, item label in the test.
-#'     \item \code{item_number: Numeric, item number in the test.
-#'     \item \code{response}: Character, student response (single character, multiple responses, or long text).
-#'     \item \code{response_status}: Factor, indicating if the response was correct, skipped, etc.
-#'     \item \code{score}: Numeric, score for the item.
-#'     \item \code{response_time}: Numeric, time spent on the item (in seconds).
-#'     \item \code{start_time}: POSIXct, timestamp when the test session started.
-#'     \item \code{end_time}: POSIXct, timestamp when the test session ended.
+#'     \item \code{student_id}: {Character, unique student identifier.}
+#'     \item \code{item_id}: {Character, item label in the test.}
+#'     \item \code{item_number}: {Numeric, item number in the test.}
+#'     \item \code{response}: {Character, student response (single character, multiple responses, or long text).}
+#'     \item \code{response_status}: {Factor, indicating if the response was correct, skipped, etc.}
+#'     \item \code{score}: {Numeric, score for the item.}
+#'     \item \code{response_time}: {Numeric, time spent on the item (in seconds).}
+#'     \item \code{start_time}: {POSIXct, timestamp when the test session started.}
+#'     \item \code{end_time}: {POSIXct, timestamp when the test session ended.}
 #'   }
 #'
 #' @importFrom readr read_csv parse_number
 #' @importFrom janitor clean_names
-#' @importFrom dplyr select mutate transmute arrange ends_with
+#' @importFrom dplyr select mutate transmute arrange ends_with filter distinct
 #' @importFrom tidyr pivot_longer pivot_wider
 #' @importFrom stringr str_remove
 #' @export
@@ -55,9 +55,17 @@ read_TAO_responses <- function(PATH) {
     dplyr::mutate(
       var = stringr::str_remove(var, "items_"),
       item_number = readr::parse_number(var),
-      item_id = ifelse(grepl("_label", var), val, var),
       var = stringr::str_remove(var, "item_\\d+_")
-    ) |>
+    )
+
+  item_id <- responses |>
+    dplyr::filter(var == "qti_label") |>
+    dplyr::mutate(item_id = val) |>
+    dplyr::distinct(item_number, item_id)
+
+
+  responses |>
+    dplyr::left_join(item_id, by =  dplyr::join_by(item_number)) |>
     tidyr::pivot_wider(names_from = "var", values_from = "val") |>
     dplyr::transmute(
       student_id = as.character(login),
@@ -72,3 +80,4 @@ read_TAO_responses <- function(PATH) {
     ) |>
     dplyr::arrange(item_id, student_id)
 }
+

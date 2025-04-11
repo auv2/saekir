@@ -12,16 +12,16 @@ read_TAO_responses(PATH)
 \value{
 A tibble with standardized columns:
 \itemize{
-\item \code{student_id}: Character, unique student identifier.
-\item \code{item_id}: Character, item label in the test.
-\item \code{item_number: Numeric, item number in the test.
-    \item \code{response}: Character, student response (single character, multiple responses, or long text).
-    \item \code{response_status}: Factor, indicating if the response was correct, skipped, etc.
-    \item \code{score}: Numeric, score for the item.
-    \item \code{response_time}: Numeric, time spent on the item (in seconds).
-    \item \code{start_time}: POSIXct, timestamp when the test session started.
-    \item \code{end_time}: POSIXct, timestamp when the test session ended.
-  }
+\item \code{student_id}: {Character, unique student identifier.}
+\item \code{item_id}: {Character, item label in the test.}
+\item \code{item_number}: {Numeric, item number in the test.}
+\item \code{response}: {Character, student response (single character, multiple responses, or long text).}
+\item \code{response_status}: {Factor, indicating if the response was correct, skipped, etc.}
+\item \code{score}: {Numeric, score for the item.}
+\item \code{response_time}: {Numeric, time spent on the item (in seconds).}
+\item \code{start_time}: {POSIXct, timestamp when the test session started.}
+\item \code{end_time}: {POSIXct, timestamp when the test session ended.}
+}
 }
 \description{
 This function reads a CSV file containing student responses from the TAO test delivery system,
