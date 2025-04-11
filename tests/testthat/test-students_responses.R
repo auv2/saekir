@@ -23,7 +23,7 @@ temp_file <- tempfile(fileext = ".csv")
 write.csv(df, temp_file, row.names = FALSE)
 
 # Run the function on the test CSV
-test_data <- read_TAO_responses(temp_file)
+test_data <- read_TAO_responses_csv(temp_file)
 
 test_that("Function returns a tibble with correct column names", {
   expected_cols <- c("student_id", "item_id", "response", "response_status",

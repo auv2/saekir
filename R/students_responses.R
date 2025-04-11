@@ -1,63 +1,33 @@
-#PATH <- "data/TAO_test_data.csv"
-
-#' Read and process TAO response data
+#' Format standardized response data
 #'
-#' This function reads a CSV file containing student responses from the TAO test delivery system,
-#' cleans and reshapes the data, and returns a standardized tibble.
+#' This function formats long-form response data from assessment platforms (e.g., TAO)
+#' into a tidy, rectangular structure suitable for analysis. It assigns item identifiers,
+#' reshapes key response variables, and ensures consistent data types across fields.
 #'
-#' @param PATH Character string specifying the path to the TAO CSV file.
+#' @param responses A long-format data frame where each row corresponds to one variable of one item
+#' for one student (e.g., output from reshaping raw platform data), with columns `item_number`, `var`, and `val`.
 #'
-#' @return A tibble with standardized columns:
-#'   \itemize{
-#'     \item \code{student_id}: {Character, unique student identifier.}
-#'     \item \code{item_id}: {Character, item label in the test.}
-#'     \item \code{item_number}: {Numeric, item number in the test.}
-#'     \item \code{response}: {Character, student response (single character, multiple responses, or long text).}
-#'     \item \code{response_status}: {Factor, indicating if the response was correct, skipped, etc.}
-#'     \item \code{score}: {Numeric, score for the item.}
-#'     \item \code{response_time}: {Numeric, time spent on the item (in seconds).}
-#'     \item \code{start_time}: {POSIXct, timestamp when the test session started.}
-#'     \item \code{end_time}: {POSIXct, timestamp when the test session ended.}
-#'   }
+#' @return A tibble with one row per student-item response and the following columns:
+#' \describe{
+#'   \item{student_id}{Character, unique identifier for each student}
+#'   \item{item_id}{Character, item label (e.g., from `qti_label`)}
+#'   \item{item_number}{Numeric, item order number in the test}
+#'   \item{response}{Character, the student’s submitted response}
+#'   \item{response_status}{Factor, correctness or status of the response (e.g., correct/incorrect)}
+#'   \item{score}{Numeric, item-level score}
+#'   \item{response_time}{Numeric, time spent on the item (in seconds)}
+#'   \item{start_time}{POSIXct, timestamp when the item was started}
+#'   \item{end_time}{POSIXct, timestamp when the item was submitted}
+#' }
 #'
-#' @importFrom readr read_csv parse_number
-#' @importFrom janitor clean_names
-#' @importFrom dplyr select mutate transmute arrange ends_with filter distinct
-#' @importFrom tidyr pivot_longer pivot_wider
-#' @importFrom stringr str_remove
+#' @examples
+#' \dontrun{
+#' formatted <- format_responses(raw_long_response_data)
+#' }
+#'
 #' @export
-read_TAO_responses <- function(PATH) {
-  vars <- c(
-    "_label",
-    "_duration",
-    "_outcomes_score",
-    "_status_correct",
-    "_responses_response_value"
-  )
 
-  dat <- readr::read_csv(PATH, show_col_types = FALSE) |>
-    janitor::clean_names()
-
-  responses <- dat |>
-    dplyr::select(# id,
-      login,
-      # score,
-      # max_score,
-      session_end_time,
-      session_start_time,
-      dplyr::ends_with(vars)) |>
-    dplyr::mutate(across(everything(), as.character)) |>
-    tidyr::pivot_longer(
-      cols = dplyr::contains(vars),
-      names_to = "var",
-      values_to = "val"
-    ) |>
-    dplyr::mutate(
-      var = stringr::str_remove(var, "items_"),
-      item_number = readr::parse_number(var),
-      var = stringr::str_remove(var, "item_\\d+_")
-    )
-
+format_responses <- function(responses) {
   item_id <- responses |>
     dplyr::filter(var == "qti_label") |>
     dplyr::mutate(item_id = val) |>
@@ -79,5 +49,6 @@ read_TAO_responses <- function(PATH) {
       end_time = as.POSIXct(session_end_time)
     ) |>
     dplyr::arrange(item_id, student_id)
+
 }
 
