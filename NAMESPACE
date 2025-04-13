@@ -2,6 +2,7 @@
 
 export(format_responses)
 export(get_item_matrix)
+export(get_time)
 export(read_TAO_responses_csv)
 export(validate_student_responses)
 importFrom(dplyr,across)
