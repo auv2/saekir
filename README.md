@@ -25,30 +25,40 @@ This is a basic example which shows you how to solve a common problem:
 
 ``` r
 library(saekir)
-students_responses <- read_TAO_responses("data/TAO_test_data.csv")
+students_responses <- read_TAO_responses_csv("data/TAO_test_data.csv")
 
 dplyr::glimpse(students_responses)
 #> Rows: 57
-#> Columns: 8
+#> Columns: 9
 #> $ student_id      <chr> "Sigrun_MMS", "gervinemandi_bergmann_4", "gervinemandi…
-#> $ item_id         <dbl> 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, …
-#> $ response        <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, "c…
-#> $ response_status <fct> seen, seen, seen, seen, seen, seen, seen, seen, seen, …
-#> $ score           <dbl> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 0, 0, …
-#> $ response_time   <dbl> 6, 70, 123, 1, 113, 0, 1, 46, 0, 2, 7, 0, 1, 225, 228,…
+#> $ item_id         <chr> "Lesskilningur", "Lesskilningur", "Lesskilningur", "Lo…
+#> $ item_number     <dbl> 4, 4, 4, 18, 18, 18, 19, 19, 19, 3, 3, 3, 17, 12, 11, …
+#> $ response        <chr> NA, NA, NA, NA, NA, NA, "1234", "1234", "1234", NA, NA…
+#> $ response_status <fct> seen, seen, seen, seen, seen, seen, correct, correct, …
+#> $ score           <dbl> NA, NA, NA, NA, NA, NA, 1, 1, 1, NA, NA, NA, 0, 0, NA,…
+#> $ response_time   <dbl> 2, 7, 0, 1, 37, 3, 6, 6, 7, 1, 46, 0, 0, 1, 6, 19, 1, …
 #> $ start_time      <dttm> 2025-03-03 14:10:56, 2025-03-03 20:29:14, 2025-03-05 …
 #> $ end_time        <dttm> 2025-03-10 10:54:16, 2025-03-03 20:40:10, 2025-03-05 …
 ```
 
 ``` r
 get_item_matrix(students_responses)
-#> # A tibble: 3 × 14
-#>   student_id     q05   q06   q07   q08   q09   q10   q12   q13   q14   q15   q16
-#>   <chr>        <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
-#> 1 Sigrun_MMS       0     0     0     0     0     0     0     0     0     0     0
-#> 2 gervinemand…     0     0     0     0     0     1     0     0     1     0     1
-#> 3 gervinemand…     0     0     0     0     0     0     0     0     0     0     0
-#> # ℹ 2 more variables: q17 <dbl>, q19 <dbl>
+#> Warning: Values from `score` are not uniquely identified; output will contain list-cols.
+#> • Use `values_fn = list` to suppress this warning.
+#> • Use `values_fn = {summary_fun}` to summarise duplicates.
+#> • Use the following dplyr code to identify duplicates.
+#>   {data} |>
+#>   dplyr::summarise(n = dplyr::n(), .by = c(student_id, item_id)) |>
+#>   dplyr::filter(n > 1L)
+#> # A tibble: 3 × 9
+#>   student_id              `Lykilorð 1234` Stærðfræði `Sýnispróf Hvolpar 01`
+#>   <chr>                   <list>          <list>     <list>                
+#> 1 Sigrun_MMS              <dbl [1]>       <dbl [6]>  <dbl [1]>             
+#> 2 gervinemandi_bergmann_4 <dbl [1]>       <dbl [6]>  <dbl [1]>             
+#> 3 gervinemandi_bergmann_5 <dbl [1]>       <dbl [6]>  <dbl [1]>             
+#> # ℹ 5 more variables: `Sýnispróf Hvolpar 02` <list>,
+#> #   `Sýnispróf Hvolpar 03` <list>, `Sýnispróf Hvolpar 04` <list>,
+#> #   `Sýnispróf Hvolpar 05` <list>, `Sýnispróf Hvolpar 06` <list>
 ```
 
 ## example of validation

@@ -35,7 +35,7 @@ This is a basic example which shows you how to solve a common problem:
 
 ```{r example}
 library(saekir)
-students_responses <- read_TAO_responses("data/TAO_test_data.csv")
+students_responses <- read_TAO_responses_csv("data/TAO_test_data.csv")
 
 dplyr::glimpse(students_responses)
 

@@ -47,8 +47,8 @@ read_TAO_responses_csv <- function(PATH) {
       login,
       # score,
       # max_score,
-      session_end_time,
-      session_start_time,
+      #session_end_time,
+      #session_start_time,
       dplyr::ends_with(vars)) |>
     dplyr::mutate(across(everything(), as.character)) |>
     tidyr::pivot_longer(
@@ -58,10 +58,17 @@ read_TAO_responses_csv <- function(PATH) {
     ) |>
     dplyr::mutate(
       var = stringr::str_remove(var, "items_"),
+      var = stringr::str_remove(var, "outcomes_"),
       item_number = readr::parse_number(var),
       var = stringr::str_remove(var, "item_\\d+_")
     )
 
-  format_responses(responses)
+  responses |>
+    dplyr::mutate(
+      item_start_time = NA,
+      item_end_time = NA) |>
+    format_responses()
 
 }
+
+
