@@ -3,6 +3,7 @@
 export(format_responses)
 export(get_item_matrix)
 export(get_time)
+export(read_TAO_responses)
 export(read_TAO_responses_csv)
 export(reshape_response_data)
 export(validate_student_responses)

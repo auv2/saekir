@@ -47,4 +47,48 @@ read_TAO_responses_csv <- function(PATH) {
 
 }
 
+#' Read and format TAO response data
+#'
+#' This function takes a TAO test data object or data frame, cleans the column names,
+#' reshapes the item-level response variables into long format, and formats the result
+#' into a standardized structure suitable for analysis.
+#'
+#' @param test_form A data frame or tibble with raw TAO test data, typically imported from a CSV or API.
+#'
+#' @return A tibble in long format with one row per student-item response. Includes standardized columns:
+#' \describe{
+#'   \item{student_id}{Unique identifier for each student}
+#'   \item{item_id}{Item label (e.g., from `qti_label`)}
+#'   \item{item_number}{Order number of the item in the test}
+#'   \item{response}{Submitted student response}
+#'   \item{response_status}{Correctness or status of the response (e.g., correct/incorrect)}
+#'   \item{score}{Score awarded for the item}
+#'   \item{response_time}{Time spent on the item (in seconds)}
+#'   \item{start_time}{Timestamp when the item was started}
+#'   \item{end_time}{Timestamp when the item was submitted}
+#' }
+#' @seealso [reshape_response_data()], [format_responses()]
+#' @importFrom janitor clean_names
+#' @examples
+#' \dontrun{
+#' test_form <- readr::read_rds("test_form.rds")
+#' responses <- read_TAO_responses(test_form)
+#' }
+#'
+#' @export
 
+read_TAO_responses <- function(test_form) {
+  raw_data <- test_form |>
+    as.data.frame() |>
+    janitor::clean_names()
+
+  ## Clean names
+  names(raw_data) <- gsub("response_\\d+_value", "response_value", names(raw_data))
+  names(raw_data) <- gsub("items_", "", names(raw_data))
+  names(raw_data) <- gsub("responses_", "", names(raw_data))
+
+  raw_data |>
+    reshape_response_data() |>
+    format_responses()
+
+}
