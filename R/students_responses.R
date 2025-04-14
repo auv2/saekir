@@ -1,3 +1,45 @@
+#' Reshape wide-format response data
+#'
+#' Converts a wide-format dataset of item responses into a long-format structure,
+#' extracting item metadata (e.g., item ID from qti_label).
+#'
+#' @param raw_data A data frame containing login, score, session times, and item_* variables.
+#' @return A long-format tibble with columns: login, total_score, session times, item_number, var, val, and item_id.
+#' @export
+
+reshape_response_data <- function(raw_data) {
+  # if (!all(c("login", "score", "session_start_time", "session_end_time") %in% names(raw_data))) {
+  #   stop("Missing required columns in input data")
+  # }
+
+  responses <- raw_data |>
+    dplyr::select(login,
+                  total_score = score,
+                  session_start_time,
+                  session_end_time,
+                  dplyr::starts_with("item_")) |>
+    dplyr::mutate(across(everything(), as.character)) |>
+    tidyr::pivot_longer(
+      cols = dplyr::starts_with("item_"),
+      names_to = "var",
+      values_to = "val"
+    ) |>
+    dplyr::mutate(
+      item_number = readr::parse_number(var),
+      var = stringr::str_remove(var, "item_\\d+_")
+    )
+
+  item_id <- responses |>
+    dplyr::filter(var == "qti_label") |>
+    dplyr::mutate(item_id = val) |>
+    dplyr::distinct(item_number, item_id)
+
+  responses <- responses |>
+    dplyr::left_join(item_id, by =  dplyr::join_by(item_number))
+  return(responses)
+
+}
+
 #' Format standardized response data
 #'
 #' This function formats long-form response data from assessment platforms (e.g., TAO)
@@ -29,21 +71,14 @@
 #' @export
 
 format_responses <- function(responses) {
-  item_id <- responses |>
-    dplyr::filter(var == "qti_label") |>
-    dplyr::mutate(item_id = val) |>
-    dplyr::distinct(item_number, item_id)
-
-
   responses |>
-    dplyr::left_join(item_id, by =  dplyr::join_by(item_number)) |>
     tidyr::pivot_wider(names_from = "var", values_from = "val") |>
     dplyr::distinct() |>
     dplyr::transmute(
       student_id = as.character(login),
       item_id = as.character(item_id),
       item_number = as.numeric(item_number),
-      response = responses_response_value,
+      response = response_value,
       response_status = (status_correct),
       score = as.numeric(score),
       response_time = as.numeric(duration),

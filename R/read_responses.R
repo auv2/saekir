@@ -1,4 +1,4 @@
-#PATH <- "data/TAO_test_data.csv"
+# PATH <- "data/TAO_test_data.csv"
 #' Read and process TAO response data from a CSV file
 #'
 #' This function reads a CSV file containing student responses exported from the TAO test delivery system.
@@ -31,39 +31,17 @@
 #' @export
 
 read_TAO_responses_csv <- function(PATH) {
-  vars <- c(
-    "_label",
-    "_duration",
-    "_outcomes_score",
-    "_status_correct",
-    "_responses_response_value"
-  )
 
-  dat <- readr::read_csv(PATH, show_col_types = FALSE) |>
+  raw_data <- readr::read_csv(PATH, show_col_types = FALSE) |>
     janitor::clean_names()
 
-  responses <- dat |>
-    dplyr::select(# id,
-      login,
-      # score,
-      # max_score,
-      #session_end_time,
-      #session_start_time,
-      dplyr::ends_with(vars)) |>
-    dplyr::mutate(across(everything(), as.character)) |>
-    tidyr::pivot_longer(
-      cols = dplyr::contains(vars),
-      names_to = "var",
-      values_to = "val"
-    ) |>
-    dplyr::mutate(
-      var = stringr::str_remove(var, "items_"),
-      var = stringr::str_remove(var, "outcomes_"),
-      item_number = readr::parse_number(var),
-      var = stringr::str_remove(var, "item_\\d+_")
-    )
+  ## Clean names
+  names(raw_data) <- gsub("outcomes_", "", names(raw_data))
+  names(raw_data) <- gsub("items_", "", names(raw_data))
+  names(raw_data) <- gsub("responses_", "", names(raw_data))
 
-  responses |>
+  raw_data |>
+    reshape_response_data() |>
     dplyr::mutate(
       item_start_time = NA,
       item_end_time = NA) |>
