@@ -5,6 +5,7 @@
 #'
 #' @param raw_data A data frame containing login, score, session times, and item_* variables.
 #' @return A long-format tibble with columns: login, total_score, session times, item_number, var, val, and item_id.
+#' @importFrom stringi stri_c
 #' @export
 
 reshape_response_data <- function(raw_data) {
@@ -37,8 +38,8 @@ reshape_response_data <- function(raw_data) {
   responses <- responses |>
     dplyr::left_join(item_id, by =  dplyr::join_by(item_number)) |>
     dplyr::mutate(var = gsub("response_\\d+_value", "response_value",var)) |>
-    dplyr::reframe(
-      val = paste0(sort(val), collapse = ", "),
+    dplyr::summarise(
+      val =  if (length(val) == 1) val else stringi::stri_c(val, collapse = ", "),
       .by = c(
         login,
         total_score,
