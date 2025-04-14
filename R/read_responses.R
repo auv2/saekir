@@ -41,6 +41,7 @@ read_TAO_responses_csv <- function(PATH) {
   raw_data |>
     reshape_response_data() |>
     dplyr::mutate(
+      item_id = NA,
       item_start_time = NA,
       item_end_time = NA) |>
     format_responses()
@@ -83,7 +84,7 @@ read_TAO_responses <- function(test_form) {
     janitor::clean_names()
 
   ## Clean names
-  names(raw_data) <- gsub("response_\\d+_value", "response_value", names(raw_data))
+  #names(raw_data) <- gsub("response_\\d+_value", "response_value", names(raw_data))
   names(raw_data) <- gsub("items_", "", names(raw_data))
   names(raw_data) <- gsub("responses_", "", names(raw_data))
 

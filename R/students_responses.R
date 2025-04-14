@@ -35,7 +35,20 @@ reshape_response_data <- function(raw_data) {
     dplyr::distinct(item_number, item_id)
 
   responses <- responses |>
-    dplyr::left_join(item_id, by =  dplyr::join_by(item_number))
+    dplyr::left_join(item_id, by =  dplyr::join_by(item_number)) |>
+    dplyr::mutate(var = gsub("response_\\d+_value", "response_value",var)) |>
+    dplyr::reframe(
+      val = paste0(sort(val), collapse = ", "),
+      .by = c(
+        login,
+        total_score,
+        session_start_time,
+        session_end_time,
+        item_number,
+        item_id,
+        var
+      )
+    )
   return(responses)
 
 }
