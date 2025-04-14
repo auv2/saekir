@@ -2,18 +2,17 @@
 % Please edit documentation in R/students_responses.R
 \name{reshape_response_data}
 \alias{reshape_response_data}
-\title{Reshape raw response data into long format}
+\title{Reshape wide-format response data}
 \usage{
 reshape_response_data(raw_data)
 }
 \arguments{
-\item{raw_data}{A data frame with login/session info and item responses in wide format.}
+\item{raw_data}{A data frame containing login, score, session times, and item_* variables.}
 }
 \value{
-A long-format tibble with columns: login, score, session times, item_number, var, and val.
+A long-format tibble with columns: login, total_score, session times, item_number, var, val, and item_id.
 }
 \description{
-Internal helper to pivot item data from wide to long format,
-extracting item number and item-level variable.
+Converts a wide-format dataset of item responses into a long-format structure,
+extracting item metadata (e.g., item ID from qti_label).
 }
-\keyword{internal}

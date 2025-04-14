@@ -40,35 +40,41 @@ reshape_response_data <- function(raw_data) {
 
 }
 
-#' Format standardized response data
+#' Format long-form response data into a structured item-level format
 #'
-#' This function formats long-form response data from assessment platforms (e.g., TAO)
-#' into a tidy, rectangular structure suitable for analysis. It assigns item identifiers,
-#' reshapes key response variables, and ensures consistent data types across fields.
+#' This function takes reshaped response data (e.g., from `reshape_response_data()`)
+#' and converts it into a structured, tidy format with one row per student-item response.
+#' It ensures consistent data types, extracts core response features (e.g., response, score, timing),
+#' and is optimized for downstream analysis or scoring.
 #'
-#' @param responses A long-format data frame where each row corresponds to one variable of one item
-#' for one student (e.g., output from reshaping raw platform data), with columns `item_number`, `var`, and `val`.
+#' @param responses A long-format tibble where each row corresponds to one response variable
+#' for one item and one student. Must include columns `login`, `item_id`, `item_number`,
+#' and wide-form variables (e.g., `response_value`, `status_correct`, `score`, `duration`,
+#' `item_start_time`, `item_end_time`) after pivoting.
 #'
-#' @return A tibble with one row per student-item response and the following columns:
+#' @return A tibble with one row per student-item response, including:
 #' \describe{
-#'   \item{student_id}{Character, unique identifier for each student}
-#'   \item{item_id}{Character, item label (e.g., from `qti_label`)}
-#'   \item{item_number}{Numeric, item order number in the test}
-#'   \item{response}{Character, the student’s submitted response}
-#'   \item{response_status}{Factor, correctness or status of the response (e.g., correct/incorrect)}
-#'   \item{score}{Numeric, item-level score}
-#'   \item{response_time}{Numeric, time spent on the item (in seconds)}
-#'   \item{start_time}{POSIXct, timestamp when the item was started}
-#'   \item{end_time}{POSIXct, timestamp when the item was submitted}
+#'   \item{student_id}{Character. Unique identifier for each student (from `login`).}
+#'   \item{item_id}{Character. Item label (e.g., from `qti_label`).}
+#'   \item{item_number}{Numeric. Position of the item in the test sequence.}
+#'   \item{response}{Character. The student’s submitted answer.}
+#'   \item{response_status}{Factor. The correctness or status of the response (e.g., "correct", "incorrect").}
+#'   \item{score}{Numeric. Points awarded for the item.}
+#'   \item{response_time}{Numeric. Time spent on the item, in seconds.}
+#'   \item{start_time}{POSIXct. Timestamp when the item was started.}
+#'   \item{end_time}{POSIXct. Timestamp when the item was submitted.}
 #' }
-#' @importFrom dplyr select mutate transmute arrange  filter distinct
+#'
+#' @importFrom dplyr select mutate transmute arrange filter distinct
 #' @importFrom tidyr pivot_wider
 #' @examples
 #' \dontrun{
-#' formatted <- format_responses(raw_long_response_data)
+#' reshaped <- reshape_response_data(raw_data)
+#' formatted <- format_responses(reshaped)
 #' }
 #'
 #' @export
+
 
 format_responses <- function(responses) {
   responses |>

@@ -2,36 +2,40 @@
 % Please edit documentation in R/students_responses.R
 \name{format_responses}
 \alias{format_responses}
-\title{Format standardized response data}
+\title{Format long-form response data into a structured item-level format}
 \usage{
 format_responses(responses)
 }
 \arguments{
-\item{responses}{A long-format data frame where each row corresponds to one variable of one item
-for one student (e.g., output from reshaping raw platform data), with columns \code{item_number}, \code{var}, and \code{val}.}
+\item{responses}{A long-format tibble where each row corresponds to one response variable
+for one item and one student. Must include columns \code{login}, \code{item_id}, \code{item_number},
+and wide-form variables (e.g., \code{response_value}, \code{status_correct}, \code{score}, \code{duration},
+\code{item_start_time}, \code{item_end_time}) after pivoting.}
 }
 \value{
-A tibble with one row per student-item response and the following columns:
+A tibble with one row per student-item response, including:
 \describe{
-\item{student_id}{Character, unique identifier for each student}
-\item{item_id}{Character, item label (e.g., from \code{qti_label})}
-\item{item_number}{Numeric, item order number in the test}
-\item{response}{Character, the student’s submitted response}
-\item{response_status}{Factor, correctness or status of the response (e.g., correct/incorrect)}
-\item{score}{Numeric, item-level score}
-\item{response_time}{Numeric, time spent on the item (in seconds)}
-\item{start_time}{POSIXct, timestamp when the item was started}
-\item{end_time}{POSIXct, timestamp when the item was submitted}
+\item{student_id}{Character. Unique identifier for each student (from \code{login}).}
+\item{item_id}{Character. Item label (e.g., from \code{qti_label}).}
+\item{item_number}{Numeric. Position of the item in the test sequence.}
+\item{response}{Character. The student’s submitted answer.}
+\item{response_status}{Factor. The correctness or status of the response (e.g., "correct", "incorrect").}
+\item{score}{Numeric. Points awarded for the item.}
+\item{response_time}{Numeric. Time spent on the item, in seconds.}
+\item{start_time}{POSIXct. Timestamp when the item was started.}
+\item{end_time}{POSIXct. Timestamp when the item was submitted.}
 }
 }
 \description{
-This function formats long-form response data from assessment platforms (e.g., TAO)
-into a tidy, rectangular structure suitable for analysis. It assigns item identifiers,
-reshapes key response variables, and ensures consistent data types across fields.
+This function takes reshaped response data (e.g., from \code{reshape_response_data()})
+and converts it into a structured, tidy format with one row per student-item response.
+It ensures consistent data types, extracts core response features (e.g., response, score, timing),
+and is optimized for downstream analysis or scoring.
 }
 \examples{
 \dontrun{
-formatted <- format_responses(raw_long_response_data)
+reshaped <- reshape_response_data(raw_data)
+formatted <- format_responses(reshaped)
 }
 
 }

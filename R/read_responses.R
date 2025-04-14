@@ -23,11 +23,9 @@
 #'
 #' @seealso \code{\link{format_responses}}
 #'
-#' @importFrom readr read_csv parse_number
+#' @importFrom readr read_csv
 #' @importFrom janitor clean_names
-#' @importFrom dplyr select mutate transmute arrange ends_with filter distinct
-#' @importFrom tidyr pivot_longer pivot_wider
-#' @importFrom stringr str_remove
+#' @importFrom dplyr mutate
 #' @export
 
 read_TAO_responses_csv <- function(PATH) {
